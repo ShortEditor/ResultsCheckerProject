@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+
+<div class="bg-gray-800 p-8 rounded-xl w-full max-w-lg shadow-xl">
+  <h1 class="text-3xl font-bold mb-6">Admin Panel</h1>
+  <form id="studentForm" class="space-y-4">
+    <input name="roll" placeholder="Roll Number" class="w-full px-4 py-2 rounded bg-gray-700" required>
+    <input name="name" placeholder="Name" class="w-full px-4 py-2 rounded bg-gray-700" required>
+    <input name="telugu" placeholder="Telugu Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="hindi" placeholder="Hindi Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="english" placeholder="English Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="maths" placeholder="Maths Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="science" placeholder="Science Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="social" placeholder="Social Marks" class="w-full px-4 py-2 rounded bg-gray-700">
+    <input name="total" placeholder="Total" class="w-full px-4 py-2 rounded bg-gray-700">
+    <select name="status" class="w-full px-4 py-2 rounded bg-gray-700">
+      <option value="PASS">PASS</option>
+      <option value="FAIL">FAIL</option>
+    </select>
+    <button type="submit" class="w-full py-3 bg-blue-600 rounded-lg hover:bg-blue-700">Add Student</button>
+  </form>
+  <p id="msg" class="mt-4 text-center text-green-400 hidden">Student added successfully!</p>
+</div>
+
+<script>
+const sheetUrl = "YOUR_WEBAPP_URL_HERE"; // Replace with Google Apps Script URL
+
+document.getElementById("studentForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const form = e.target;
+  const row = Object.values(Object.fromEntries(new FormData(form).entries()));
+
+  try {
+    await fetch(sheetUrl, {
+      method: "POST",
+      body: JSON.stringify(row),
+      headers: {"Content-Type":"application/json"}
+    });
+    document.getElementById("msg").classList.remove("hidden");
+    form.reset();
+  } catch(err){
+    alert("Error adding student: " + err);
+  }
+});
+</script>
+</body>
+</html>

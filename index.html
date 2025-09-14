@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Result Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f9; padding:20px; }
+    .card { background:white; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); max-width:600px; margin:auto; }
+    h2 { text-align:center; }
+    input, button { padding:10px; margin:5px 0; width:100%; border-radius:5px; border:1px solid #ccc; }
+    table { border-collapse: collapse; width:100%; margin-top:15px; }
+    table, th, td { border:1px solid #ccc; padding:10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Student Result Portal</h2>
+    <label>Enter Roll Number:</label>
+    <input type="text" id="rollInput" placeholder="e.g. 101">
+    <button onclick="getResult()">Get Result</button>
+    <div id="result"></div>
+  </div>
+
+<script>
+const proxyUrl = "https://api.allorigins.win/raw?url=";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTqjMjpDFTuM0rPo86ql96CAw3uUD2OTqZMQi4IZm3jcFEZFHXf4V3hL7Yh5pKin8sO7HNGPeom4oMu/pub?gid=0&single=true&output=csv";
+
+async function getResult() {
+  const roll = document.getElementById("rollInput").value.trim();
+  if (!roll) { alert("Please enter a Roll Number!"); return; }
+
+  try {
+    const res = await fetch(proxyUrl + encodeURIComponent(sheetUrl));
+    const data = await res.text();
+    const rows = data.split("\n").map(r => r.split(","));
+
+    // find student by roll number
+    let found = false;
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][0] === roll) {
+        found = true;
+        displayResult(rows[0], rows[i]);
+        break;
+      }
+    }
+    if (!found) document.getElementById("result").innerHTML = "<p style='color:red'>No record found!</p>";
+  } catch (err) {
+    document.getElementById("result").innerHTML = "<p style='color:red'>Error fetching data!</p>";
+    console.error(err);
+  }
+}
+
+function displayResult(headers, row) {
+  let html = "<table><tr>";
+  headers.forEach(h => html += `<th>${h}</th>`);
+  html += "</tr><tr>";
+  row.forEach(v => html += `<td>${v}</td>`);
+  html += "</tr></table>";
+  document.getElementById("result").innerHTML = html;
+}
+</script>
+</body>
+</html>
